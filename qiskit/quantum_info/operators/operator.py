@@ -61,7 +61,9 @@ class Operator(LinearOp):
     :math:`|\psi\rangle=|0\rangle (\rho = |0\rangle\langle 0|)` changes it to the
     one state :math:`|\psi\rangle=|1\rangle (\rho = |1\rangle\langle 1|)`:
 
-    .. code-block:: python
+    .. plot::
+       :include-source:
+       :nofigs:
 
         >>> import numpy as np
         >>> from qiskit.quantum_info import Operator
@@ -204,6 +206,8 @@ class Operator(LinearOp):
 
         Raises:
             ValueError: when an invalid output method is selected.
+            MissingOptionalLibrary: If SymPy isn't installed and ``'latex'`` or
+                ``'latex_source'`` is selected for ``output``.
 
         """
         # pylint: disable=cyclic-import
@@ -236,7 +240,7 @@ class Operator(LinearOp):
     def _ipython_display_(self):
         out = self.draw()
         if isinstance(out, str):
-            print(out)
+            print(out)  # pylint: disable=bad-builtin
         else:
             from IPython.display import display
 
