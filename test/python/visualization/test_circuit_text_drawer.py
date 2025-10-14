@@ -41,6 +41,7 @@ from qiskit.visualization import circuit_drawer
 from qiskit.visualization.circuit import text as elements
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.circuit.classical import expr, types
+from qiskit.circuit.controlflow import ForLoopOp
 from qiskit.circuit.library import (
     HGate,
     U2Gate,
@@ -348,6 +349,48 @@ class TestTextDrawerGatesInCircuit(QiskitTestCase):
             expected,
         )
 
+    def test_text_measure_arrows_false(self):
+        """Test measure drawing with measure_arrows False."""
+        expected = "\n".join(
+            [
+                "         ┌───┐┌───┐┌───────┐",
+                "qr_0: |0>┤ X ├┤ H ├┤ M-c_0 ├",
+                "         ├───┤├───┤├───────┤",
+                "qr_1: |0>┤ X ├┤ H ├┤ M-c_1 ├",
+                "         ├───┤├───┤├───────┤",
+                "qr_2: |0>┤ X ├┤ H ├┤ M-c_2 ├",
+                "         └───┘└───┘└───────┘",
+                "  c: 0 3/═══════════════════",
+                "                            ",
+            ]
+        )
+
+        qr = QuantumRegister(3, "qr")
+        cr = ClassicalRegister(3, "c")
+        circuit = QuantumCircuit(qr, cr)
+        circuit.x(0)
+        circuit.h(0)
+        circuit.measure(0, 0)
+        circuit.x(1)
+        circuit.h(1)
+        circuit.measure(1, 1)
+        circuit.x(2)
+        circuit.h(2)
+        circuit.measure(2, 2)
+
+        self.assertEqual(
+            str(
+                circuit_drawer(
+                    circuit,
+                    output="text",
+                    initial_state=True,
+                    cregbundle=True,
+                    measure_arrows=False,
+                )
+            ),
+            expected,
+        )
+
     def test_wire_order(self):
         """Test the wire_order option"""
         expected = "\n".join(
@@ -397,6 +440,35 @@ class TestTextDrawerGatesInCircuit(QiskitTestCase):
             expected,
         )
 
+    def test_box_end_after_transpile(self):
+        """Test that drawing a `box` doesn't explode."""
+        # The exact output is not important - feel free to change it.  We only care that it doesn't
+        # explode when drawing.
+        qc = QuantumCircuit(5)
+        qc = QuantumCircuit(4)
+        with qc.box():
+            qc.cx(0, 1)
+            qc.cx(0, 3)
+
+        qc_ = transpile(qc, initial_layout=[2, 3, 1, 0])
+        # We don't care about trailing whitespace on a line.
+        actual = "\n".join(
+            line.rstrip() for line in str(qc_.draw("text", fold=80, idle_wires=True)).splitlines()
+        )
+
+        expected = """\
+         ┌───────      ┌───┐ ───────┐
+q_3 -> 0 ┤        ─────┤ X ├        ├─
+         │             └─┬─┘        │
+q_2 -> 1 ┤        ───────┼──        ├─
+         │ Box-0         │    End-0 │
+q_0 -> 2 ┤        ──■────■──        ├─
+         │        ┌─┴─┐             │
+q_1 -> 3 ┤        ┤ X ├─────        ├─
+         └─────── └───┘      ───────┘
+""".rstrip()
+        self.assertEqual(actual, expected)
+
     def test_basic_box(self):
         """Test that drawing a `box` doesn't explode."""
         # The exact output is not important - feel free to change it.  We only care that it doesn't
@@ -413,16 +485,16 @@ class TestTextDrawerGatesInCircuit(QiskitTestCase):
 
         expected = """\
      ┌─────── ┌───┐ ───────┐
-q_0: ┤ Box-0  ┤ X ├  End-0 ├────────────────────────────────────────────
+q_0: ┤ Box-0  ┤ X ├  End-0 ├──────────────────────────────────────────
      └─────── └───┘ ───────┘
-q_1: ───────────────────────────────────────────────────────────────────
-                             ┌───────                          ───────┐
-q_2: ────────────────────────┤        ──■─────────────────────        ├─
-                             │        ┌─┴─┐                           │
-q_3: ────────────────────────┤ Box-0  ┤ X ├───────────────────  End-0 ├─
-                             │        └───┘┌───────  ───────┐         │
-q_4: ────────────────────────┤        ─────┤ Box-1    End-1 ├─        ├─
-                             └───────      └───────  ───────┘  ───────┘
+q_1: ─────────────────────────────────────────────────────────────────
+                            ┌───────                         ───────┐
+q_2: ───────────────────────┤        ────────────────────■──        ├─
+                            │                          ┌─┴─┐        │
+q_3: ───────────────────────┤ Box-0  ──────────────────┤ X ├  End-0 ├─
+                            │        ┌───────  ───────┐└───┘        │
+q_4: ───────────────────────┤        ┤ Box-1    End-1 ├─────        ├─
+                            └─────── └───────  ───────┘      ───────┘
 """.rstrip()
         self.assertEqual(actual, expected)
 
@@ -3646,7 +3718,7 @@ class TestTextPhase(QiskitTestCase):
         """Text Bell state with phase."""
         expected = "\n".join(
             [
-                "global phase: \u03C0/2",
+                "global phase: \u03c0/2",
                 "     ┌───┐     ",
                 "q_0: ┤ H ├──■──",
                 "     └───┘┌─┴─┐",
@@ -4395,6 +4467,23 @@ class TestCircuitControlFlowOps(QiskitVisualizationTestCase):
 
         actual = str(qc.draw("text", fold=-1, initial_state=False))
         self.assertEqual(actual, expected)
+
+    def test_control_flow_different_registers(self):
+        """Test drawing with control flow where the blocks are defined on separate registers."""
+        # define a block on custom registers
+        block_qreg = QuantumRegister(2, "qb")
+        block = QuantumCircuit(block_qreg)
+        block.ecr(0, 1)
+        for_loop = ForLoopOp([0, 1, 2], None, block)
+
+        # append to a circuit and check drawing works
+        qreg = QuantumRegister(2, name="qc")
+        circuit = QuantumCircuit(qreg)
+        circuit.append(for_loop, qreg)
+
+        # we don't check the full drawing, we just check the drawing didn't fail
+        out = str(circuit_drawer(circuit, output="text"))
+        self.assertTrue("For-0 (0, 1, 2)" in out)
 
     def test_nested_switch_op_var(self):
         """Test switch with standalone Var."""
