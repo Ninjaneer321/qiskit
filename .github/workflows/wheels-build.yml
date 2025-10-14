@@ -116,7 +116,7 @@ jobs:
         env:
           PGO_WORK_DIR: ${{ github.workspace }}/pgo-data
           PGO_OUT_PATH: ${{ github.workspace }}/merged.profdata
-      - uses: pypa/cibuildwheel@v3.0.1
+      - uses: pypa/cibuildwheel@v3.2.1
       - uses: actions/upload-artifact@v4
         with:
           path: ./wheelhouse/*.whl
@@ -132,7 +132,7 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
       - uses: dtolnay/rust-toolchain@stable
-      - uses: pypa/cibuildwheel@v3.0.1
+      - uses: pypa/cibuildwheel@v3.2.1
       - uses: actions/upload-artifact@v4
         with:
           path: ./wheelhouse/*.whl
@@ -153,7 +153,7 @@ jobs:
       - uses: docker/setup-qemu-action@v3
         with:
           platforms: all
-      - uses: pypa/cibuildwheel@v3.0.1
+      - uses: pypa/cibuildwheel@v3.2.1
         env:
           CIBW_ARCHS_LINUX: s390x
           CIBW_TEST_SKIP: "cp*"
@@ -176,7 +176,7 @@ jobs:
       - uses: docker/setup-qemu-action@v3
         with:
           platforms: all
-      - uses: pypa/cibuildwheel@v3.0.1
+      - uses: pypa/cibuildwheel@v3.2.1
         env:
           CIBW_ARCHS_LINUX: ppc64le
           CIBW_TEST_SKIP: "cp*"
