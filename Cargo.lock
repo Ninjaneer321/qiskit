@@ -450,8 +450,8 @@ dependencies = [
  "bytemuck",
  "dyn-stack",
  "equator 0.4.2",
- "faer-macros",
- "faer-traits",
+ "faer-macros 0.21.0",
+ "faer-traits 0.21.5",
  "gemm",
  "generativity",
  "libm",
@@ -467,13 +467,34 @@ dependencies = [
 ]
 
 [[package]]
-name = "faer-ext"
-version = "0.5.0"
+name = "faer"
+version = "0.23.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9756e068191bf4f6b6a36dd131687f1f802cd2e3fce8b1ec4dbd5a5f5dfbafe1"
+checksum = "3cb922206162d9405f9fc059052b3f997bdc92745da7bfd620645f5092df20d1"
 dependencies = [
- "faer",
- "nalgebra",
+ "bytemuck",
+ "dyn-stack",
+ "equator 0.4.2",
+ "faer-macros 0.22.1",
+ "faer-traits 0.23.2",
+ "gemm",
+ "generativity",
+ "libm",
+ "nano-gemm",
+ "num-complex",
+ "num-traits",
+ "pulp",
+ "reborrow",
+]
+
+[[package]]
+name = "faer-ext"
+version = "0.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aa4d037166f25435671ecc6054ae76b964f17da513353f1617690470680efdf0"
+dependencies = [
+ "faer 0.23.2",
+ "nalgebra 0.34.1",
  "ndarray",
  "num-complex",
 ]
@@ -490,6 +511,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "faer-macros"
+version = "0.22.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2cc4b8cd876795d3b19ddfd59b03faa303c0b8adb9af6e188e81fc647c485bb9"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.106",
+]
+
+[[package]]
 name = "faer-traits"
 version = "0.21.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -497,12 +529,30 @@ checksum = "1430e111b20872c7eaa82c7ada071bff1c3e3ac09cc6f4df676065fd2d41eb62"
 dependencies = [
  "bytemuck",
  "dyn-stack",
- "faer-macros",
+ "faer-macros 0.21.0",
  "generativity",
  "libm",
  "num-complex",
  "num-traits",
  "pulp",
+ "reborrow",
+]
+
+[[package]]
+name = "faer-traits"
+version = "0.23.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "24b69235b5f54416286c485fb047f2f499fc935a4eee2caadf4757f3c94c7b62"
+dependencies = [
+ "bytemuck",
+ "dyn-stack",
+ "faer-macros 0.22.1",
+ "generativity",
+ "libm",
+ "num-complex",
+ "num-traits",
+ "pulp",
+ "qd",
  "reborrow",
 ]
 
@@ -910,6 +960,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "nalgebra"
+version = "0.34.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c4d5b3eff5cd580f93da45e64715e8c20a3996342f1e466599cf7a267a0c2f5f"
+dependencies = [
+ "approx",
+ "num-complex",
+ "num-rational",
+ "num-traits",
+ "simba",
+ "typenum",
+]
+
+[[package]]
 name = "nalgebra-macros"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1108,7 +1172,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b2dba356160b54f5371b550575b78130a54718b4c6e46b3f33a6da74a27e78b"
 dependencies = [
  "libc",
- "nalgebra",
+ "nalgebra 0.33.2",
  "ndarray",
  "num-complex",
  "num-integer",
@@ -1438,13 +1502,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "qd"
+version = "0.7.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ff8bb755b6008c3b41bf8a0866c8dd4e1245a2f011ceaa22a13ee55c538493e2"
+dependencies = [
+ "bytemuck",
+ "libm",
+ "num-traits",
+ "pulp",
+]
+
+[[package]]
 name = "qiskit-accelerate"
 version = "2.3.0-dev"
 dependencies = [
  "approx",
  "hashbrown 0.15.5",
  "itertools 0.14.0",
- "nalgebra",
+ "nalgebra 0.33.2",
  "ndarray",
  "num-bigint",
  "num-complex",
@@ -1470,7 +1546,7 @@ dependencies = [
  "cbindgen",
  "hashbrown 0.15.5",
  "indexmap",
- "nalgebra",
+ "nalgebra 0.33.2",
  "ndarray",
  "num-complex",
  "pyo3",
@@ -1495,7 +1571,7 @@ dependencies = [
  "hashbrown 0.15.5",
  "indexmap",
  "itertools 0.14.0",
- "nalgebra",
+ "nalgebra 0.33.2",
  "ndarray",
  "nom",
  "nom-unicode",
@@ -1515,7 +1591,7 @@ version = "2.3.0-dev"
 dependencies = [
  "hashbrown 0.15.5",
  "itertools 0.14.0",
- "nalgebra",
+ "nalgebra 0.33.2",
  "ndarray",
  "num-complex",
  "numpy",
@@ -1581,7 +1657,7 @@ dependencies = [
  "hashbrown 0.15.5",
  "indexmap",
  "itertools 0.14.0",
- "nalgebra",
+ "nalgebra 0.33.2",
  "ndarray",
  "ndarray-einsum",
  "num-complex",
@@ -1605,12 +1681,12 @@ dependencies = [
  "approx",
  "bincode",
  "bytemuck",
- "faer",
+ "faer 0.21.9",
  "faer-ext",
  "hashbrown 0.15.5",
  "indexmap",
  "itertools 0.14.0",
- "nalgebra",
+ "nalgebra 0.33.2",
  "ndarray",
  "num-complex",
  "num-traits",
@@ -1642,7 +1718,7 @@ dependencies = [
  "hashbrown 0.15.5",
  "indexmap",
  "itertools 0.14.0",
- "nalgebra",
+ "nalgebra 0.33.2",
  "ndarray",
  "num-complex",
  "numpy",
