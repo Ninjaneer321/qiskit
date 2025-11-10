@@ -116,8 +116,8 @@ jobs:
         env:
           PGO_WORK_DIR: ${{ github.workspace }}/pgo-data
           PGO_OUT_PATH: ${{ github.workspace }}/merged.profdata
-      - uses: pypa/cibuildwheel@v3.0.1
-      - uses: actions/upload-artifact@v4
+      - uses: pypa/cibuildwheel@v3.2.1
+      - uses: actions/upload-artifact@v5
         with:
           path: ./wheelhouse/*.whl
           name: ${{ inputs.artifact-prefix }}wheels-tier-1-${{ matrix.os }}
@@ -132,8 +132,8 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
       - uses: dtolnay/rust-toolchain@stable
-      - uses: pypa/cibuildwheel@v3.0.1
-      - uses: actions/upload-artifact@v4
+      - uses: pypa/cibuildwheel@v3.2.1
+      - uses: actions/upload-artifact@v5
         with:
           path: ./wheelhouse/*.whl
           name: ${{ inputs.artifact-prefix }}wheels-macos-intel
@@ -153,11 +153,11 @@ jobs:
       - uses: docker/setup-qemu-action@v3
         with:
           platforms: all
-      - uses: pypa/cibuildwheel@v3.0.1
+      - uses: pypa/cibuildwheel@v3.2.1
         env:
           CIBW_ARCHS_LINUX: s390x
           CIBW_TEST_SKIP: "cp*"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           path: ./wheelhouse/*.whl
           name: ${{ inputs.artifact-prefix }}wheels-linux-s390x
@@ -176,11 +176,11 @@ jobs:
       - uses: docker/setup-qemu-action@v3
         with:
           platforms: all
-      - uses: pypa/cibuildwheel@v3.0.1
+      - uses: pypa/cibuildwheel@v3.2.1
         env:
           CIBW_ARCHS_LINUX: ppc64le
           CIBW_TEST_SKIP: "cp*"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           path: ./wheelhouse/*.whl
           name: ${{ inputs.artifact-prefix }}wheels-linux-ppc64le
@@ -199,7 +199,7 @@ jobs:
           set -e
           python -m pip install -U build
           python -m build --sdist .
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           path: ./dist/*.tar.gz
           name: ${{ inputs.artifact-prefix }}sdist
